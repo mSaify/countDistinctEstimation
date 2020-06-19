@@ -1,8 +1,8 @@
-# countDistinctImplementation
+# countDistinctEstimation
 
 The implementation of stream algorithm for estimating distinct count.
 
-The implementation of the algorithm is with an example of streaming input which is a sequence of multi-attribute metadata that corresponds to different jobs containing these columns
+The algorithm is with an example of streaming input which is a sequence of multi-attribute metadata that corresponds to different jobs containing these columns
 
 SourceIPAddress, ClusterId , JobId, Date, Geography
 xxxx.xxxx.xxxx.xxxx, [0-99] , long64, DD:MM , [0-9]
