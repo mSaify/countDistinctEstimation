@@ -23,10 +23,15 @@ CountDistinctSketchAlgorithm generates and hold CountDistinctDataStructure which
 1. Create a sketch
 
     2^1  --- -->  [, , , ] 
+    
     2^2  --- -->  [ , , , ]
+    
     2^3  ---  --> [, , , , ]
+    
     .
+    
     .
+    
     2^64 --- --> [, , , , ]
     
     where each bucket has 2^R bit to turned on. Number buckets depend upon the hash function output. This solution uses long64 hash function hence 64 of these buckets.
