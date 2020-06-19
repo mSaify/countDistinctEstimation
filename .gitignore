@@ -1,0 +1,13 @@
+.idea
+lib
+.settings
+data/5000000IpAddr.tsv
+target
+data/100IpAddr.tsv
+data/100000IpAddr.tsv
+data/10000IpAddr.tsv
+data/1000000IpAddr.tsv
+data/2000000IpAddr.tsv
+data/10000000IpAddr.tsv
+data/1000IpAddr.tsv
+.project

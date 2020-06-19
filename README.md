@@ -20,7 +20,7 @@ CountDistinctSketchAlgorithm generates and hold CountDistinctDataStructure which
 
 ### Algorithm Steps
 
-1. Create a sketch
+#### 1. Create a sketch
 
     2^1  --- -->  [, , , ] 
     
@@ -38,41 +38,99 @@ CountDistinctSketchAlgorithm generates and hold CountDistinctDataStructure which
     
   In the above T hash buckets the bits are turned on by using these steps
   
-    consider
-    
-      z - 64 bit long hash output  z = hash_function("str")
-      R - approx total values
+   consider
+   
+   z - 64 bit long hash output  z = hash_function("str")
+   
+   R - approx total values
       
-       i. calculate trailing zeros
-       
-        /// if z = 12 R = 2^4
-        /// z / R = 12 
-        /// binary fo z = 1110 
-        /// the number of trailing zeros = 1 - so value 12 goes into T = 2^1 - bucket
+   i. calculate trailing zeros
+   
+     if z = 12 R = 2^4
+     z / R = 12 
+     binary fo z = 1110 
+     the number of trailing zeros = 1 - so value 12 goes into T = 2^1 - bucket
+    
+   ii. bit to turn on
+   
+     the leading prefix bits which are bits before trailing zeros are used to calculate the position to be turned on.
+     z=12 binary = 1110, in this case it will first to bits 11, which is position 3 in our example.
+
+
+    
+  #### 2. Count Distinct Estimation
+      
+      For each hashfunction T estimate F0 as follows
         
-       ii. bit to turn on
-       
-        /// the leading prefix bits which are bits before trailing zeros are used to calculate the position to be turned on.
-        /// z=12 binary = 1110, in this case it will first to bits 11, which is position 3 in our example.
-    
-    
-    
-  2. how the distinct count is estimated?
-      
-         i. For each hashfunction T estimate F0 as follows
-            
-             w*= arg.median( Tw[i] = 0)
-             w* is the bucket where the count distinct estiamte lies.
-             
-             p0 = ( count(Tw*[i]=0) )/R;
-             
-             F0d =  (Math.log(p0)) / (Math.log( 1.0- (1.0/R) ));
-             
-             Median(F01 , F02 .... F0h) is the estimated count distinct value.
+         w*= arg.median( Tw[i] = 0)
+         w* is the bucket where the count distinct estiamte lies.
+         
+         p0 = ( count(Tw*[i]=0) )/R;
+         
+         F0d =  (Math.log(p0)) / (Math.log( 1.0- (1.0/R) ));
+         
+         Median(F01 , F02 .... F0h) is the estimated count distinct value.
      
     
+  #### 3. Filtered distinct count 
+  
+       The above count distinct algorithm can be extended to calculated values for 
+       aggregated and filtered data well. For e.g.
+       
+        The sourceIP can be from any geography labeled as value 0-9
+        
+        The sketch described in step 1 for sourceIP is generated for each geographic value separately
+        
+        sourceIPsketch1 - geography 1
+        sourceIPsketch2 - geograhpy 2 
+        
+        If the query is 
+            
+            **Select count(*) from sourceIP where geography=1**
+            
+            the count is estimated from the sketch of sourceIPsketch1
+            
+        If  the query is
+        
+             **Select count(*) from sourceIP where geography=(1,2)**
              
-    
+             the count is estimated by taking bit wise union(sourceIPSketch1, sourceIPSketch2)
+        
+  #Execution
+  
+  java -Xmx8192M -jar ./target/countDistinctEstimator-1.0.jar ./data/100000IPAddr.tsv ./data/queryFile.tsv
+        
+   heap size need to be increased
+   
+   ### output
+   
+       constructing all Count Distinct Sketches .... 
+       for query 1. 'Distinct IP Address' - 52777
+       for query 2. 'Distinct Job Signature' - 23824
+       for query 3. 'Distinct Job Signature from clusterId, 25' - 960
+       for query 4. 'Distinct Job Signature from clusterId range [1,99]' - 23905
+       for query 5. 'Distinct Job signatures in a given month 12' - 6018
+       for query 6. 'Distinct Job signatures in a given range of months [6,12]' - 25234
+       for query 7. 'Distinct Job signatures from a given Geography 6' - 7911
+       for query 8. 'Distinct IP addresses from a given Geography 6' - 8772
+       for query 9. 'Distinct Job Signature from Geographies 0,9,1,2' - 23952
+       for query 10. 'Distinct IP addresses from Geographies 0,9,1,2' - 34723
+       
+       
+       actual vs calculated result...
+       query 1 actual value 53181 - algorithm value 52777 - percentage error -  0.76
+       query 2 actual value 22869 - algorithm value 23824 - percentage error -  4.18
+       query 3 actual value 1010 - algorithm value 960 - percentage error -  4.95
+       query 4 actual value 22827 - algorithm value 23905 - percentage error -  4.72
+       query 5 actual value 5453 - algorithm value 6018 - percentage error -  10.36
+       query 6 actual value 20444 - algorithm value 25234 - percentage error -  23.43
+       query 7 actual value 7814 - algorithm value 7911 - percentage error -  1.24
+       query 8 actual value 9387 - algorithm value 8772 - percentage error -  6.55
+       query 9 actual value 18016 - algorithm value 23952 - percentage error -  32.95
+       query 10 actual value 30348 - algorithm value 34723 - percentage error -  14.42
+
+        
+  # A refernce explanation  
     
  A variation of what explained here - https://medium.com/@amitj975/an-efficient-way-of-calculating-distinct-count-over-a-data-hyperloglog-a7481f0fcf3d
  

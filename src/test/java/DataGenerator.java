@@ -20,7 +20,7 @@ public class DataGenerator {
         fileWriter = new TestFileWriter();
     }
 
-    @Test
+    //@Test
     public void GenerateData() {
 
         var res = GeneratorDistinctIPv4Address(200000);

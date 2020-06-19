@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public class executor {
 
-    static String path = "1000IpAddr.tsv";
-    static String queryFile = "queryFile.tsv";
+    static String path = "./data/1000IpAddr.tsv";
+    static String queryFile = "./data/queryFile.tsv";
     static Optional<JobsRecord[]> jobsRecords;
 
     public  static void main(String[] args) throws Exception {
@@ -19,7 +19,7 @@ public class executor {
         var queries =  new QueryReader().process(queryFile);
 
         CountDistinctAlgorithmSettings
-                .withInitialValue(2,(int) Math.pow(2,17));
+                .withInitialValue(3,(int) Math.pow(2,17));
 
 
         System.out.println("constructing all Count Distinct Sketches .... ");

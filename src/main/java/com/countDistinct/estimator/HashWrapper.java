@@ -1,10 +1,14 @@
 package com.countDistinct.estimator;
 
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.commons.codec.digest.MurmurHash2;
+
+
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.IntStream;
+
+import org.apache.commons.codec.digest.MurmurHash2;
+import org.apache.commons.lang3.StringUtils;
 
 
 
@@ -25,7 +29,7 @@ public class HashWrapper {
     public Long getHashValue(Integer hashFunctionIndex,String val) {
 
         randomSeed = Optional.ofNullable(randomSeeds.get(hashFunctionIndex));
-        byte[] bytes = StringUtils.getBytesUtf8(val);
+        byte[] bytes = StringUtils.getBytes(val, Charset.defaultCharset());
         return Math.abs(MurmurHash2.hash64(bytes, bytes.length, randomSeed.orElseGet(()->0)));
 
 
